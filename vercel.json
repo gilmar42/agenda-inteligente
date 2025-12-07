@@ -1,4 +1,0 @@
-{
-  "buildCommand": "bash frontend/build.sh",
-  "outputDirectory": "frontend/dist"
-}
