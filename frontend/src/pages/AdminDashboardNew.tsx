@@ -29,7 +29,7 @@ const AdminDashboardNew: React.FC = () => {
     setLoading(true)
     setError(null)
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth_token')
       if (!token) {
         window.location.href = '/login'
         return
@@ -78,7 +78,7 @@ const AdminDashboardNew: React.FC = () => {
     if (!window.confirm('Tem certeza que deseja deletar?')) return
     
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth_token')
       const endpoint = type === 'appointment' ? 'appointments' : type === 'client' ? 'clients' : 'services'
       const response = await fetch(`${API_URL}/admin/${endpoint}/${id}`, {
         method: 'DELETE',

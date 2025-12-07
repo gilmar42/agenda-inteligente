@@ -56,7 +56,7 @@ const Signup: React.FC = () => {
       const res = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialResponse.credential })
+        body: JSON.stringify({ token: credentialResponse.credential })
       })
 
       const data = await res.json()
