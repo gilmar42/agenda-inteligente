@@ -9,7 +9,7 @@ import Plans from './pages/Plans'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Admin from './pages/Admin'
-import AdminDashboard from './pages/AdminDashboard'
+import AdminDashboardNew from './pages/AdminDashboardNew'
 import './styles.css'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
@@ -25,7 +25,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboardNew />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
