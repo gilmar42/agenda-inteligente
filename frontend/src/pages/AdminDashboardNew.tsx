@@ -39,9 +39,6 @@ const AdminDashboardNew: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [formModal, setFormModal] = useState<{ isOpen: boolean; type: string; data: any }>({ isOpen: false, type: '', data: null })
   const [searchQuery, setSearchQuery] = useState('')
-  const [appointments, setAppointments] = useState([])
-  const [clients, setClients] = useState([])
-  const [services, setServices] = useState([])
 
   useEffect(() => {
     loadDashboardData()
@@ -57,9 +54,6 @@ const AdminDashboardNew: React.FC = () => {
       if (response.ok) {
         const result = await response.json()
         setData(result)
-        setAppointments(result.appointments || [])
-        setClients(result.clients || [])
-        setServices(result.services || [])
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err)
@@ -194,7 +188,7 @@ const AdminDashboardNew: React.FC = () => {
             />
             <DataTable
               columns={['Cliente', 'Serviço', 'Data', 'Status', 'Ações']}
-              rows={appointments.filter(a => 
+              rows={(data.appointments || []).filter(a => 
                 a.client.toLowerCase().includes(searchQuery.toLowerCase())
               ).map(a => ({
                 ...a,
@@ -222,7 +216,7 @@ const AdminDashboardNew: React.FC = () => {
             />
             <DataTable
               columns={['Nome', 'Telefone', 'Email', 'Agendamentos', 'Ações']}
-              rows={clients.filter(c => 
+              rows={(data.clients || []).filter(c => 
                 c.name.toLowerCase().includes(searchQuery.toLowerCase())
               ).map(c => ({
                 ...c,
@@ -250,7 +244,7 @@ const AdminDashboardNew: React.FC = () => {
             />
             <DataTable
               columns={['Nome', 'Preço', 'Duração', 'Ações']}
-              rows={services.filter(s => 
+              rows={(data.services || []).filter(s => 
                 s.name.toLowerCase().includes(searchQuery.toLowerCase())
               ).map(s => ({
                 ...s,
