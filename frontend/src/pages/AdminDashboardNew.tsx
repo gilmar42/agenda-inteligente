@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import AdminTabs from '../components/AdminTabs'
-import StatsCard from '../components/StatsCard'
-import ChartComponent from '../components/ChartComponent'
-import DataTable from '../components/DataTable'
-import FormModal from '../components/FormModal'
-import ThemeToggle from '../components/ThemeToggle'
 import './AdminDashboard.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
@@ -37,7 +31,6 @@ const AdminDashboardNew: React.FC = () => {
   })
 
   const [loading, setLoading] = useState(true)
-  const [formModal, setFormModal] = useState<{ isOpen: boolean; type: string; data: any }>({ isOpen: false, type: '', data: null })
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
@@ -48,26 +41,45 @@ const AdminDashboardNew: React.FC = () => {
     setLoading(true)
     try {
       const token = localStorage.getItem('token')
+      if (!token) {
+        window.location.href = '/login'
+        return
+      }
+
       const response = await fetch(`${API_URL}/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      
+      if (response.status === 401) {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+        return
+      }
+
       if (response.ok) {
         const result = await response.json()
-        setData(result)
+        setData(result || {
+          stats: { totalAppointments: 0, totalClients: 0, totalRevenue: 0, pendingAppointments: 0 },
+          revenueData: [],
+          appointmentsData: [],
+          appointments: [],
+          clients: [],
+          services: []
+        })
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err)
+      setData({
+        stats: { totalAppointments: 0, totalClients: 0, totalRevenue: 0, pendingAppointments: 0 },
+        revenueData: [],
+        appointmentsData: [],
+        appointments: [],
+        clients: [],
+        services: []
+      })
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleAddItem = (type: string) => {
-    setFormModal({ isOpen: true, type, data: null })
-  }
-
-  const handleEditItem = (type: string, item: any) => {
-    setFormModal({ isOpen: true, type, data: item })
   }
 
   const handleDeleteItem = async (type: string, id: string) => {
@@ -89,34 +101,9 @@ const AdminDashboardNew: React.FC = () => {
     }
   }
 
-  const handleFormSubmit = async (formData: any) => {
-    try {
-      const token = localStorage.getItem('token')
-      const endpoint = formModal.type === 'appointment' ? 'appointments' : 
-                       formModal.type === 'client' ? 'clients' : 'services'
-      
-      const method = formModal.data ? 'PUT' : 'POST'
-      const url = formModal.data 
-        ? `${API_URL}/admin/${endpoint}/${formModal.data.id}`
-        : `${API_URL}/admin/${endpoint}`
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      })
-
-      if (response.ok) {
-        setFormModal({ isOpen: false, type: '', data: null })
-        loadDashboardData()
-      }
-    } catch (err) {
-      console.error('Failed to submit form:', err)
-    }
-  }
+  const appointmentsToShow = Array.isArray(data?.appointments) ? data.appointments : []
+  const clientsToShow = Array.isArray(data?.clients) ? data.clients : []
+  const servicesToShow = Array.isArray(data?.services) ? data.services : []
 
   return (
     <main className="admin-dashboard">
@@ -125,12 +112,30 @@ const AdminDashboardNew: React.FC = () => {
           <h1>Painel Administrativo</h1>
           <div className="header-actions">
             <span className="user-info">{user?.name || user?.email}</span>
-            <ThemeToggle />
           </div>
         </div>
       </header>
 
-      <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* Tabs Navigation */}
+      <div className="admin-tabs">
+        <div className="tabs-container">
+          {['overview', 'agendamentos', 'clientes', 'servicos', 'relatorios', 'configuracoes', 'integracoes'].map(tab => (
+            <button
+              key={tab}
+              className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'overview' && '📊 Visão Geral'}
+              {tab === 'agendamentos' && '📅 Agendamentos'}
+              {tab === 'clientes' && '👥 Clientes'}
+              {tab === 'servicos' && '🛠️ Serviços'}
+              {tab === 'relatorios' && '📈 Relatórios'}
+              {tab === 'configuracoes' && '⚙️ Configurações'}
+              {tab === 'integracoes' && '🔗 Integrações'}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="admin-content">
         {loading ? (
@@ -138,36 +143,21 @@ const AdminDashboardNew: React.FC = () => {
         ) : activeTab === 'overview' ? (
           <div className="overview-section">
             <div className="stats-grid">
-              <StatsCard
-                title="Total de Agendamentos"
-                value={data.stats.totalAppointments}
-                color="primary"
-              />
-              <StatsCard
-                title="Total de Clientes"
-                value={data.stats.totalClients}
-                color="success"
-              />
-              <StatsCard
-                title="Receita Total"
-                value={`R$ ${data.stats.totalRevenue.toLocaleString('pt-BR')}`}
-                color="warning"
-              />
-              <StatsCard
-                title="Agendamentos Pendentes"
-                value={data.stats.pendingAppointments}
-                color="danger"
-              />
-            </div>
-
-            <div className="charts-grid">
-              <div className="chart-container">
-                <h3>Receita por Dia</h3>
-                <ChartComponent data={data.revenueData} />
+              <div className="stats-card primary">
+                <h3>Total de Agendamentos</h3>
+                <p className="stats-value">{data?.stats?.totalAppointments || 0}</p>
               </div>
-              <div className="chart-container">
-                <h3>Agendamentos por Dia</h3>
-                <ChartComponent data={data.appointmentsData} />
+              <div className="stats-card success">
+                <h3>Total de Clientes</h3>
+                <p className="stats-value">{data?.stats?.totalClients || 0}</p>
+              </div>
+              <div className="stats-card warning">
+                <h3>Receita Total</h3>
+                <p className="stats-value">R$ {((data?.stats?.totalRevenue || 0) / 100).toLocaleString('pt-BR')}</p>
+              </div>
+              <div className="stats-card danger">
+                <h3>Agendamentos Pendentes</h3>
+                <p className="stats-value">{data?.stats?.pendingAppointments || 0}</p>
               </div>
             </div>
           </div>
@@ -175,9 +165,7 @@ const AdminDashboardNew: React.FC = () => {
           <div className="tab-content">
             <div className="tab-header">
               <h2>Agendamentos</h2>
-              <button className="btn-primary" onClick={() => handleAddItem('appointment')}>
-                + Novo Agendamento
-              </button>
+              <button className="btn-primary">+ Novo Agendamento</button>
             </div>
             <input
               type="text"
@@ -186,26 +174,41 @@ const AdminDashboardNew: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <DataTable
-              columns={['Cliente', 'Serviço', 'Data', 'Status', 'Ações']}
-              rows={(data.appointments || []).filter(a => 
-                a.client.toLowerCase().includes(searchQuery.toLowerCase())
-              ).map(a => ({
-                ...a,
-                actions: [
-                  { label: 'Editar', action: () => handleEditItem('appointment', a) },
-                  { label: 'Deletar', action: () => handleDeleteItem('appointment', a.id) }
-                ]
-              }))}
-            />
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Serviço</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointmentsToShow
+                    .filter(a => a?.client?.toLowerCase?.()?.includes(searchQuery.toLowerCase()))
+                    .map(a => (
+                      <tr key={a?.id}>
+                        <td>{a?.client}</td>
+                        <td>{a?.service}</td>
+                        <td>{a?.date}</td>
+                        <td><span className="status-badge">{a?.status}</span></td>
+                        <td>
+                          <button className="btn-sm btn-edit">Editar</button>
+                          <button className="btn-sm btn-delete" onClick={() => handleDeleteItem('appointment', a?.id)}>Deletar</button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : activeTab === 'clientes' ? (
           <div className="tab-content">
             <div className="tab-header">
               <h2>Clientes</h2>
-              <button className="btn-primary" onClick={() => handleAddItem('client')}>
-                + Novo Cliente
-              </button>
+              <button className="btn-primary">+ Novo Cliente</button>
             </div>
             <input
               type="text"
@@ -214,26 +217,41 @@ const AdminDashboardNew: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <DataTable
-              columns={['Nome', 'Telefone', 'Email', 'Agendamentos', 'Ações']}
-              rows={(data.clients || []).filter(c => 
-                c.name.toLowerCase().includes(searchQuery.toLowerCase())
-              ).map(c => ({
-                ...c,
-                actions: [
-                  { label: 'Editar', action: () => handleEditItem('client', c) },
-                  { label: 'Deletar', action: () => handleDeleteItem('client', c.id) }
-                ]
-              }))}
-            />
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Agendamentos</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientsToShow
+                    .filter(c => c?.name?.toLowerCase?.()?.includes(searchQuery.toLowerCase()))
+                    .map(c => (
+                      <tr key={c?.id}>
+                        <td>{c?.name}</td>
+                        <td>{c?.phone}</td>
+                        <td>{c?.email}</td>
+                        <td>{c?.totalAppointments}</td>
+                        <td>
+                          <button className="btn-sm btn-edit">Editar</button>
+                          <button className="btn-sm btn-delete" onClick={() => handleDeleteItem('client', c?.id)}>Deletar</button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : activeTab === 'servicos' ? (
           <div className="tab-content">
             <div className="tab-header">
               <h2>Serviços</h2>
-              <button className="btn-primary" onClick={() => handleAddItem('service')}>
-                + Novo Serviço
-              </button>
+              <button className="btn-primary">+ Novo Serviço</button>
             </div>
             <input
               type="text"
@@ -242,18 +260,33 @@ const AdminDashboardNew: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <DataTable
-              columns={['Nome', 'Preço', 'Duração', 'Ações']}
-              rows={(data.services || []).filter(s => 
-                s.name.toLowerCase().includes(searchQuery.toLowerCase())
-              ).map(s => ({
-                ...s,
-                actions: [
-                  { label: 'Editar', action: () => handleEditItem('service', s) },
-                  { label: 'Deletar', action: () => handleDeleteItem('service', s.id) }
-                ]
-              }))}
-            />
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Duração (min)</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {servicesToShow
+                    .filter(s => s?.name?.toLowerCase?.()?.includes(searchQuery.toLowerCase()))
+                    .map(s => (
+                      <tr key={s?.id}>
+                        <td>{s?.name}</td>
+                        <td>R$ {((s?.price || 0) / 100).toLocaleString('pt-BR')}</td>
+                        <td>{s?.duration}</td>
+                        <td>
+                          <button className="btn-sm btn-edit">Editar</button>
+                          <button className="btn-sm btn-delete" onClick={() => handleDeleteItem('service', s?.id)}>Deletar</button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : activeTab === 'relatorios' ? (
           <div className="tab-content">
@@ -334,14 +367,6 @@ const AdminDashboardNew: React.FC = () => {
           </div>
         ) : null}
       </div>
-
-      <FormModal
-        isOpen={formModal.isOpen}
-        type={formModal.type}
-        data={formModal.data}
-        onClose={() => setFormModal({ isOpen: false, type: '', data: null })}
-        onSubmit={handleFormSubmit}
-      />
     </main>
   )
 }
