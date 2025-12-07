@@ -341,6 +341,25 @@ app.post('/payments/pix', verifyToken, async (req, res) => {
   }
 })
 
+// ============ HEALTH CHECK ============
+app.get('/health', (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    database: mongoConnected ? 'mongodb' : 'sqlite',
+    environment: process.env.NODE_ENV || 'development'
+  }
+  res.status(200).json(health)
+})
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    message: 'API is running'
+  })
+})
+
 // ============ ADMIN ROUTES ============
 app.use('/admin', adminRouter)
 
@@ -353,7 +372,12 @@ app.use('/api/superadmin', superadminRouter)
 // ============ ERROR HANDLING ============
 app.use((err, req, res, next) => {
   console.error('Uncaught error:', err)
-  res.status(500).json({ ok: false, errors: ['Internal server error'] })
+  const statusCode = err.statusCode || 500
+  res.status(statusCode).json({ 
+    ok: false, 
+    errors: [err.message || 'Internal server error'],
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  })
 })
 
 // ============ START SERVER ============
