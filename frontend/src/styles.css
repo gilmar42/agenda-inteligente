@@ -1,0 +1,31 @@
+/* Design System tokens */
+:root {
+  --color-bg: #0e0e10;
+  --color-text: #e5e7eb;
+  --color-primary: #3b82f6; /* azul neon-like */
+  --color-secondary: #64748b;
+  --color-card: #1f2937;
+}
+:root[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-text: #0f172a;
+  --color-primary: #2563eb;
+  --color-secondary: #475569;
+  --color-card: #f1f5f9;
+}
+
+body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--color-bg); color: var(--color-text); }
+.container { max-width: 960px; margin: 0 auto; padding: 24px; }
+.header { display: flex; justify-content: space-between; align-items: center; }
+.hero { padding: 48px 0; display: grid; gap: 12px; }
+.btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; }
+.btn-primary { background: var(--color-primary); color: white; }
+.btn-secondary { background: var(--color-secondary); color: white; }
+.input { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--color-secondary); background: transparent; color: var(--color-text); }
+.card { background: var(--color-card); border-radius: 12px; padding: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.menu { display: flex; gap: 8px; }
+.video-placeholder { height: 200px; display: grid; place-items: center; border: 2px dashed var(--color-secondary); border-radius: 12px; }
+.form { display: grid; gap: 12px; max-width: 400px; margin: 0 auto; }
+.error-box { background: #fee; padding: 12px; border-radius: 8px; border: 1px solid #fcc; }
+.error { color: #c00; margin: 4px 0; font-size: 14px; }

@@ -1,0 +1,280 @@
+.data-table-container {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 10px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.data-table-container:hover {
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.07),
+    0 15px 50px rgba(0, 0, 0, 0.12);
+}
+
+.table-search {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(249, 250, 251, 0.8);
+}
+
+.search-input:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  background: white;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  background: white;
+  transform: translateY(-1px);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.data-table th {
+  padding: 1.125rem 1rem;
+  text-align: left;
+  font-weight: 700;
+  color: #374151;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.15);
+  position: relative;
+}
+
+.data-table th:first-child {
+  border-radius: 12px 0 0 0;
+}
+
+.data-table th:last-child {
+  border-radius: 0 12px 0 0;
+}
+
+.data-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.data-table th.sortable:hover {
+  background: linear-gradient(135deg, rgba(76, 95, 213, 0.18) 0%, rgba(93, 58, 138, 0.18) 100%);
+  color: #4c5fd5;
+}
+
+.data-table td {
+  padding: 1.125rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.9375rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.data-table tbody tr {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.data-table tbody tr.clickable:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  cursor: pointer;
+  transform: translateX(4px);
+  box-shadow: -4px 0 0 0 #667eea;
+}
+
+.table-loading,
+.table-empty {
+  text-align: center;
+  padding: 2rem !important;
+  color: #999;
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  border: 2px solid rgba(0, 0, 0, 0.06);
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.action-btn:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.edit-btn:hover {
+  color: #3498db;
+}
+
+.delete-btn:hover {
+  color: #e74c3c;
+}
+
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.table-pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.4rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-pagination button:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.table-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .data-table-container {
+    padding: 1rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .table-pagination {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .table-pagination button {
+    width: 100%;
+  }
+}
+
+/* Dark Theme Premium Colors */
+[data-theme='dark'] .data-table-container {
+  background: rgba(30, 27, 75, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+[data-theme='dark'] .search-input {
+  background: rgba(30, 27, 75, 0.6);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  color: #e0e7ff;
+}
+
+[data-theme='dark'] .search-input::placeholder {
+  color: #a5b4fc;
+  opacity: 0.6;
+}
+
+[data-theme='dark'] .search-input:focus {
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  background: rgba(30, 27, 75, 0.8);
+}
+
+[data-theme='dark'] .data-table thead {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+}
+
+[data-theme='dark'] .data-table th {
+  color: #e0e7ff;
+  border-bottom-color: rgba(129, 140, 248, 0.3);
+}
+
+[data-theme='dark'] .data-table td {
+  color: #c7d2fe;
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .data-table tbody tr:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+}
+
+[data-theme='dark'] .client-name,
+[data-theme='dark'] .service-name,
+[data-theme='dark'] .user-name {
+  color: #e0e7ff;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .client-email,
+[data-theme='dark'] .client-phone,
+[data-theme='dark'] .description-text {
+  color: #a5b4fc;
+  font-weight: 400;
+}
+
+[data-theme='dark'] .badge,
+[data-theme='dark'] .status-badge {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
+  color: #e0e7ff;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .table-pagination {
+  border-top-color: rgba(139, 92, 246, 0.2);
+}
+
+[data-theme='dark'] .table-pagination button {
+  background: rgba(30, 27, 75, 0.6);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #e0e7ff;
+}
+
+[data-theme='dark'] .table-pagination button:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #fbbf24;
+}
