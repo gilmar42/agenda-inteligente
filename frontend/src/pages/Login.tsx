@@ -38,7 +38,7 @@ const Login: React.FC = () => {
       }
 
       login(data.token, data.user, data.user.plan || 'free')
-      navigate('/admin')
+      navigate('/admin/dashboard')
     } catch (err) {
       setErrors(['Erro de conexão. Verifique se o backend está rodando.'])
       setLoading(false)
@@ -83,7 +83,7 @@ const Login: React.FC = () => {
       }
 
       login(data.token, data.user, data.user.plan || 'free')
-      navigate('/admin')
+      navigate('/admin/dashboard')
     } catch (err) {
       setErrors(['Erro de conexão. Verifique se o backend está rodando.'])
       setLoading(false)

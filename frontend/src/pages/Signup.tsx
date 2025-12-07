@@ -67,7 +67,7 @@ const Signup: React.FC = () => {
       }
 
       login(data.token, data.user, 'free')
-      navigate('/admin')
+      navigate('/admin/dashboard')
     } catch (err) {
       setErrors(['Erro de conexão. Verifique se o backend está rodando.'])
       setLoading(false)
@@ -107,7 +107,7 @@ const Signup: React.FC = () => {
       }
 
       login(data.token, data.user, 'free')
-      navigate('/admin')
+      navigate('/admin/dashboard')
     } catch (err) {
       setErrors(['Erro de conexão. Verifique se o backend está rodando.'])
       setLoading(false)
