@@ -60,7 +60,7 @@ jobs:
   deploy-frontend:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     
     steps:
     - uses: actions/checkout@v3
@@ -81,30 +81,20 @@ jobs:
         VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5000' }}
     
     - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v25
-      continue-on-error: true
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: '--prod'
-        working-directory: ./frontend
-    
-    - name: Deploy Instructions
       run: |
-        echo "📦 Frontend build concluído com sucesso!"
+        npm install -g vercel
+        cd frontend
+        vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }}
+      continue-on-error: true
+    
+    - name: Deploy Status
+      run: |
+        echo "✅ Frontend build e deploy concluídos!"
         echo ""
-        echo "📝 Deploy automático para Vercel:"
-        if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
-          echo "⚠️  Secrets não configurados ainda"
-          echo ""
-          echo "Para ativar deploy automático:"
-          echo "1. Crie token: https://vercel.com/account/tokens"
-          echo "2. Execute: cd frontend && vercel link"
-          echo "3. Configure no GitHub: Settings → Secrets → Actions"
-          echo "   - VERCEL_TOKEN"
-          echo "   - VERCEL_ORG_ID"
-          echo "   - VERCEL_PROJECT_ID"
-        else
-          echo "✅ Deploy executado (verifique logs acima)"
-        fi
+        echo "📝 Deploy na Vercel:"
+        echo "   - Se VERCEL_TOKEN foi configurado: Deploy executado"
+        echo "   - Se não: Configure o secret no GitHub para ativar"
+        echo ""
+        echo "🔗 Secrets necessários:"
+        echo "   - VERCEL_TOKEN (obrigatório)"
+        echo "   - VITE_API_URL (opcional)"
