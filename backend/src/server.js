@@ -139,21 +139,33 @@ app.post('/signup', async (req, res) => {
     const passwordHash = await bcrypt.hash(value.password, 10)
 
     if (mongoConnected && User) {
-      const existingEmail = await User.findOne({ email: value.email })
-      const existingPhone = await User.findOne({ phone: value.phone })
+      let existingUser = null
       
-      if (existingEmail || existingPhone) {
+      // Only search by email if provided
+      if (value.email) {
+        existingUser = await User.findOne({ email: value.email })
+      }
+      
+      // Also search by phone if provided and no existing user found
+      if (!existingUser && value.phone) {
+        existingUser = await User.findOne({ phone: value.phone })
+      }
+      
+      if (existingUser) {
         return res.status(400).json({ ok: false, errors: ['Email or phone already registered'] })
       }
 
-      const user = await User.create({
+      const userPayload = {
         id,
         name: value.name || null,
-        email: value.email || null,
-        phone: value.phone || null,
         passwordHash,
         plan: 'free'
-      })
+      }
+
+      if (value.email) userPayload.email = value.email
+      if (value.phone) userPayload.phone = value.phone
+
+      const user = await User.create(userPayload)
 
       const token = jwt.sign({ userId: user.id, plan: user.plan }, JWT_SECRET, { expiresIn: '7d' })
       return res.json({ ok: true, user: { id: user.id, email: user.email, name: user.name }, token })

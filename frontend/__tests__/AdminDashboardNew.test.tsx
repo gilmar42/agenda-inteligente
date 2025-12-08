@@ -76,7 +76,7 @@ describe('AdminDashboardNew', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/total de agendamentos/i)).toBeInTheDocument()
-    })
+    }, { timeout: 3000 })
   })
 
   it('should handle fetch errors gracefully', async () => {

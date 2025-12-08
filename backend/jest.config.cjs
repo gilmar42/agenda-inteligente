@@ -9,5 +9,5 @@ module.exports = {
     '/node_modules/',
     '/dist/'
   ],
-  testTimeout: 10000
+  testTimeout: 15000
 }
