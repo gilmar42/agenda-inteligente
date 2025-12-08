@@ -1,4 +1,13 @@
 module.exports = {
   testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.test.js']
+  testMatch: ['**/__tests__/**/*.test.js'],
+  collectCoverageFrom: [
+    'src/**/*.js',
+    '!src/server.js'
+  ],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/'
+  ],
+  testTimeout: 10000
 }

@@ -5,8 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import Card from '../components/Card'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+import { API_URL, isGoogleOAuthEnabled } from '../config/api'
 
 const Signup: React.FC = () => {
   const navigate = useNavigate()
@@ -166,7 +165,7 @@ const Signup: React.FC = () => {
           </Button>
 
           {/* Google OAuth - Oculto por enquanto, funciona apenas com email */}
-          {import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'seu-client-id.apps.googleusercontent.com' && (
+          {isGoogleOAuthEnabled() && (
             <>
               <div style={{ margin: '1.5rem 0', textAlign: 'center', position: 'relative' }}>
                 <div style={{ borderTop: '1px solid var(--color-border)', position: 'absolute', width: '100%', top: '50%' }} />
