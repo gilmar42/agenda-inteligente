@@ -93,9 +93,10 @@ describe('AuthContext', () => {
   })
 
   it('should throw error when useAuth is used outside AuthProvider', () => {
-    const { result } = renderHook(() => useAuth())
-    
-    expect(result.error).toBeTruthy()
-    expect((result.error as Error).message).toContain('useAuth must be used within AuthProvider')
+    // This test verifies that useAuth throws when used outside AuthProvider
+    // In a real scenario, React would catch this error in the error boundary
+    expect(() => {
+      renderHook(() => useAuth())
+    }).toThrow('useAuth must be used within AuthProvider')
   })
 })
